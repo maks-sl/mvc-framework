@@ -1,0 +1,11 @@
+{
+    "config": {
+        "sort-packages": true
+    },
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "scripts": {
+        "serve": "php -S 0.0.0.0:8080 -t public"
+    }
+}
