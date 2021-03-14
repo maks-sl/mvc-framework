@@ -1,6 +1,7 @@
 <?php
 
 use Framework\Http\RequestFactory;
+use Framework\Http\Responder;
 use Framework\Http\Response;
 use Framework\Http\Router\Exception\RequestNotMatchedException;
 use Framework\Http\Router\Route\RouteCollection;
@@ -36,6 +37,4 @@ try {
 
 ### Send
 
-$protocol = $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.0';
-header($protocol.' ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase());
-echo $response->getBody();
+Responder::send($response);
