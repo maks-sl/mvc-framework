@@ -6,6 +6,7 @@ use Framework\Http\Response;
 use Framework\Http\Router\Exception\RequestNotMatchedException;
 use Framework\Http\Router\Route\RouteCollection;
 use Framework\Http\Router\Router;
+use Framework\Renderer;
 
 chdir(dirname(__DIR__));
 require 'vendor/autoload.php';
@@ -29,7 +30,8 @@ try {
     $action = $result->getAction();
 
     ### Make response
-    $response = (new $controller())->$action($request, $result->getAttributes());
+    $renderer = new Renderer('views');
+    $response = (new $controller($renderer))->$action($request, $result->getAttributes());
 
 } catch (RequestNotMatchedException $e){
     $response = new Response('Undefined page', 404);
