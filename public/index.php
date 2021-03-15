@@ -4,20 +4,19 @@ use Framework\Http\RequestFactory;
 use Framework\Http\Responder;
 use Framework\Http\Response;
 use Framework\Http\Router\Exception\RequestNotMatchedException;
-use Framework\Http\Router\Route\RouteCollection;
 use Framework\Http\Router\Router;
-use Framework\Http\Router\UrlGenerator;
-use Framework\Renderer;
+
+/**
+ * @var \Framework\Container\Container $container
+ * @var \Framework\Http\Router\Router $router
+ */
 
 chdir(dirname(__DIR__));
 require 'vendor/autoload.php';
 
-### Config router
+$container = require 'config/container.php';
 
-$routes = new RouteCollection();
-$routes->get('home', '/', App\Controllers\HomeController::class, 'index');
-
-$router = new Router($routes);
+$router = $container->get(Router::class);
 
 ### Make request
 
@@ -27,13 +26,11 @@ try {
 
     ### Resolve handler
     $result = $router->match($request);
-    $controller = $result->getController();
+    $controller = $container->get($result->getController());
     $action = $result->getAction();
 
     ### Make response
-    $urlGenerator = new UrlGenerator($router);
-    $renderer = new Renderer('views', $urlGenerator);
-    $response = (new $controller($renderer))->$action($request, $result->getAttributes());
+    $response = $controller->$action($request, $result->getAttributes());
 
 } catch (RequestNotMatchedException $e){
     $response = new Response('Undefined page', 404);
