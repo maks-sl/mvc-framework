@@ -21,3 +21,13 @@ $container->set(Application::class, function (Container $container) {
         $container->get(Router::class)
     );
 });
+
+$container->set(\PDO::class, function (Container $container) {
+    $config = $container->get('config')['pdo'];
+    return new \PDO(
+        $config['dsn'],
+        $config['username'],
+        $config['password'],
+        $config['options']
+    );
+});
