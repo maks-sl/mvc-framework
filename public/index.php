@@ -6,6 +6,7 @@ use Framework\Http\Response;
 use Framework\Http\Router\Exception\RequestNotMatchedException;
 use Framework\Http\Router\Route\RouteCollection;
 use Framework\Http\Router\Router;
+use Framework\Http\Router\UrlGenerator;
 use Framework\Renderer;
 
 chdir(dirname(__DIR__));
@@ -30,7 +31,8 @@ try {
     $action = $result->getAction();
 
     ### Make response
-    $renderer = new Renderer('views');
+    $urlGenerator = new UrlGenerator($router);
+    $renderer = new Renderer('views', $urlGenerator);
     $response = (new $controller($renderer))->$action($request, $result->getAttributes());
 
 } catch (RequestNotMatchedException $e){
