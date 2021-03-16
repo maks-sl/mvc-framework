@@ -13,6 +13,9 @@ class Responder
             $response->getStatusCode(),
             $response->getReasonPhrase()
         ));
+        foreach ($response->getHeaders() as $name => $values) {
+            header($name . ':' . implode(', ', $values));
+        }
         echo $response->getBody();
     }
 }

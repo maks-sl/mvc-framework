@@ -7,6 +7,7 @@ class Response
     private $body;
     private $statusCode;
     private $reasonPhrase = '';
+    private $headers = [];
 
     private static $phrases = [
         200 => 'OK',
@@ -54,6 +55,34 @@ class Response
         $new = clone $this;
         $new->statusCode = $code;
         $new->reasonPhrase = $reasonPhrase;
+        return $new;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function hasHeader($name): bool
+    {
+        return isset($this->headers[$name]);
+    }
+
+    public function getHeader($name)
+    {
+        if (!$this->hasHeader($name)) {
+            return null;
+        }
+        return $this->headers[$name];
+    }
+
+    public function withHeader($name, $value): self
+    {
+        $new = clone $this;
+        if ($new->hasHeader($name)) {
+            unset($new->headers[$name]);
+        }
+        $new->headers[$name] = (array)$value;
         return $new;
     }
 }
