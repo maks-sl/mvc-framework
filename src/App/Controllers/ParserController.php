@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Helpers\InputHelper;
+use App\Helpers\InputValidator;
 use App\Widgets\Pagination;
 use App\Parser\Repository\ResultRepository;
 use App\Parser\Repository\TaskRepository;
@@ -40,6 +41,9 @@ class ParserController
     {
         if (!$url = $request->getParsedBody()['url'] ?? false) {
             throw new \LogicException('Empty url');
+        }
+        if (!InputValidator::assertValidUrl($url)) {
+            throw new \LogicException('Url not valid');
         }
 
         $numResults = $this->parser->handleUrl($url);
