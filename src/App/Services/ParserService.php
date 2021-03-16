@@ -34,9 +34,7 @@ class ParserService
             return ! (bool) $this->results->findForTaskByUrl($task->id, $item->url);
         });
 
-        foreach ($filtered as $item) {
-            $this->results->saveParserResult($task->id, $item);
-        }
+        $this->results->saveParserResults($task->id, $filtered);
 
         return count($filtered);
     }

@@ -54,19 +54,26 @@ class ResultRepository
         return ($row = $stmt->fetch()) ? $this->hydrate($row) : null;
     }
 
-    public function saveParserResult(int $taskId, ParserResult $item): bool
+    /**
+     * @param int $taskId
+     * @param ParserResult[] $items
+     * @throws \Exception
+     */
+    public function saveParserResults(int $taskId, array $items): void
     {
         $stmt = $this->pdo->prepare(
-            'INSERT INTO results(task_id, url, name, price, image, description) VALUES (:taskId, :url, :name, :price, :image, :description)'
+            'INSERT INTO results(task_id, url, name, price, image, description) VALUES (?, ?, ?, ?, ?, ?)'
         );
-        $stmt->bindParam(':taskId', $taskId);
-        $stmt->bindParam(':url', $item->url);
-        $stmt->bindParam(':name', $item->name);
-        $stmt->bindParam(':price', $item->price);
-        $stmt->bindParam(':image', $item->image);
-        $stmt->bindParam(':description', $item->description);
-
-        return $stmt->execute();
+        try {
+            $this->pdo->beginTransaction();
+            foreach ($items as $item) {
+                $stmt->execute([$taskId, $item->url, $item->name, $item->price, $item->image, $item->description]);
+            }
+            $this->pdo->commit();
+        }catch (\Exception $e){
+            $this->pdo->rollback();
+            throw $e;
+        }
     }
 
     private function hydrate(array $row): Result
