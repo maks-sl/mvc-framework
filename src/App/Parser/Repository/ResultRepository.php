@@ -14,14 +14,26 @@ class ResultRepository
         $this->pdo = $pdo;
     }
 
+    public function countAllForTask(int $id): int
+    {
+        $stmt = $this->pdo->prepare('SELECT count(id) FROM results WHERE task_id = ?');
+        $stmt->execute([$id]);
+        return $stmt->fetchColumn();
+    }
+
     /**
      * @param int $id
+     * @param int $limit
+     * @param int $offset
      * @return Result[]|array
      */
-    public function getAllForTask(int $id): array
+    public function getAllForTask(int $id, int $limit, int $offset): array
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM results WHERE task_id = ? ORDER BY id DESC');
-        $stmt->execute([$id]);
+        $stmt = $this->pdo->prepare('SELECT * FROM results WHERE task_id = :id ORDER BY id DESC LIMIT :limit OFFSET :offset');
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
 
         return array_map([$this, 'hydrate'], $stmt->fetchAll());
     }

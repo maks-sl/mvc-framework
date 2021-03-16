@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Helpers\InputHelper;
+use App\Widgets\Pagination;
 use App\Parser\Repository\ResultRepository;
 use App\Parser\Repository\TaskRepository;
 use App\Services\ParserService;
@@ -16,6 +17,8 @@ class ParserController
     private $tasks;
     private $results;
     private $parser;
+
+    private const PER_PAGE = 10;
 
     public function __construct(Renderer $renderer, TaskRepository $tasks, ResultRepository $results, ParserService $parser)
     {
@@ -53,10 +56,22 @@ class ParserController
         if (!$task = $this->tasks->findById($id)) {
             throw new \DomainException('Task not found');
         }
-        $results = $this->results->getAllForTask($task->id);
+
+        $pagination = new Pagination(
+            $this->results->countAllForTask($task->id),
+            InputHelper::toInt($args['page'] ?? 1),
+            self::PER_PAGE
+        );
+
+        $results = $this->results->getAllForTask(
+            $task->id,
+            $pagination->getLimit(),
+            $pagination->getOffset()
+        );
         return new Response($this->renderer->render('parser/view', [
             'task' => $task,
             'results' => $results,
+            'pagination' => $pagination,
         ]));
     }
 }
