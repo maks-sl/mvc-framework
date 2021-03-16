@@ -41,10 +41,10 @@ class ParserController
 
         $numResults = $this->parser->handleUrl($url);
 
-        $listItems = $this->tasks->getList();
-        return new Response($this->renderer->render('parser/list', [
-            'listItems' => $listItems,
-        ]));
+        $response = new Response('', 302);
+        return $response->withHeader(
+            'Location', $this->renderer->url('parser_list')
+        );
     }
 
     public function view(Request $request, array $args = []): Response
